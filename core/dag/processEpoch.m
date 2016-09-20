@@ -66,3 +66,11 @@ end
 
 dagnet.reset() ;
 dagnet.move('cpu') ;
+
+% clear unnecessary training files to save space from directories
+try 
+    clearDiskSpace('fer') ;
+    clearDiskSpace('sfew') ;
+catch
+    warning('unable to clear up after processing epoch') ;
+end

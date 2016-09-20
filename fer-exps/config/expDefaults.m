@@ -1,12 +1,15 @@
-function [opts, bestNet] = expDefaults(mode, model, gpus, bn, lr, bs, local, opts)
+function [opts, bestNet] = expDefaults(mode, model, gpus, bs, bn, lr, local, opts)
 % Returns default options used in experiments
 
 % set path to data root
 DATA_ROOT = '~/data' ;
 
 % generate the experiment name
-experimentName = buildExpName(model, bn, lr);
-
+if ~strcmp(mode, 'test-deployed')
+    experimentName = buildExpName(model, bn, lr);
+else
+    experimentName = model;
+end
 
 % set shared options
 opts.expType = 'benchmarks';
@@ -37,7 +40,7 @@ if strcmp(mode, 'train')
     opts.train.learningRate = learningSchedules(lr);
     opts.fineTuningRate = 0.1;
     opts.expDir = fullfile(rootExpPath, 'train');
-    opts.imdbPath = fullfile(opts.dataDir, opts.pretrainedNet, 'imdb.mat');
+    opts.imdbPath = fullfile(opts.dataDir, 'imdbs', 'imdb.mat');
     opts.train.expDir = opts.expDir;
     opts.local = local;
     opts.useBnorm = bn;
@@ -54,17 +57,35 @@ if strcmp(mode, 'test')
     opts.test.numEpochs = 1;
     opts.test.testMode = true;
     opts.test.batchSize = bs;
+
     % Load the network from the best epoch of training
     bestEpoch = findBestCheckpoint(fullfile(rootExpPath, 'train'));
     data = load(fullfile(rootExpPath, 'train', ...
         strcat('net-epoch-', num2str(bestEpoch), '.mat')));
     bestNet = data.net;
+
     opts.test.bestEpoch = bestEpoch;
     opts.expDir = fullfile(rootExpPath, 'test');
-    opts.imdbPath = fullfile(opts.dataDir, opts.pretrainedNet, 'imdb_test.mat');
+    opts.imdbPath = fullfile(opts.dataDir, 'imdbs', 'imdb_test.mat');
     opts.test.expDir = opts.expDir;
     opts.local = local;
     testCNN(bestNet, opts);
+end
+
+if strcmp(mode, 'test-deployed')
+    opts.test.gpus = gpus ;
+    opts.test.numEpochs = 1 ;
+    opts.test.testMode = true ;
+    opts.test.batchSize = bs ;
+
+    % Load the deployed network
+    net = initPretrainedNet(opts)
+    opts.expDir = fullfile(rootExpPath, 'test') ;
+    opts.imdbPath = fullfile(opts.dataDir, 'imdbs', 'imdb_test.mat') ;
+    opts.test.expDir = opts.expDir ;
+    opts.test.bestEpoch = 1;
+    opts.local = false ;
+    testCNN(net, opts) ;
 end
 
 % --------------------------------------------------------------------

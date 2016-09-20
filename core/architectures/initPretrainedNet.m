@@ -3,20 +3,21 @@ function dagnet = initPretrainedNet(opts)
 % --------------------------------------------------------------------
 %                                            Imagenet-pretrained models
 % --------------------------------------------------------------------
+
 if strcmp(opts.pretrainedNet, 'alexnet_imagenet')
-    net = load(fullfile(opts.modelDir, 'imagenet-matconvnet-alex.mat'));
+    modelFile = 'imagenet-matconvnet-alex.mat' ;
 end
 
 if strcmp(opts.pretrainedNet, 'vgg_m_imagenet')
-    net = load(fullfile(opts.modelDir, 'imagenet-vgg-m.mat'));
+    modelFile = 'imagenet-vgg-m.mat' ;
 end
 
 if strcmp(opts.pretrainedNet, 'vgg_vd_imagenet')
-    net = load(fullfile(opts.modelDir, 'imagenet-vgg-verydeep-16.mat'));
+    modelFile = 'imagenet-vgg-verydeep-16.mat' ;
 end
 
 if strcmp(opts.pretrainedNet, 'resnet50_imagenet')
-    net = load(fullfile(opts.modelDir, 'imagenet-resnet-50-dag.mat'));
+    modelFile = 'imagenet-resnet-50-dag.mat' ;
 end
 
 % --------------------------------------------------------------------
@@ -24,61 +25,64 @@ end
 % --------------------------------------------------------------------
 
 if strcmp(opts.pretrainedNet, 'alexnet_face')
-    data = load(fullfile(opts.modelDir, 'alexnet-face.mat'));
-    net = data.net;
+    modelFile = 'alexnet-face-bn.mat' ;
 end
 
-% (pretrained by Elliot on vgg-faces with BN)
 if strcmp(opts.pretrainedNet, 'vgg_m_face')
-    data = load(fullfile(opts.modelDir, 'vgg-m-face.mat'));
-    net = data.net;
+    modelFile = 'vgg-m-face-bn.mat' ;
 end
 
-% vgg-vd-16 trained on vgg-faces data without batch normalization
-% NOTE: This is "vgg_face"
 if strcmp(opts.pretrainedNet, 'vgg_vd_face')
-    net = load(fullfile(opts.modelDir, 'vgg-vd-face.mat'));
+    modelFile = 'vgg-face.mat' ;
 end
 
 if strcmp(opts.pretrainedNet, 'resnet50_face')
-    data = load(fullfile(opts.modelDir, 'resnet-50-face.mat'));
-    net = data.net;
+    modelFile = 'resnet50-face-bn.mat' ;
 end
+
 
 % --------------------------------------------------------------------
 %                                     Vgg-face -> FER pretrained models
 % --------------------------------------------------------------------
 
 if strcmp(opts.pretrainedNet, 'alexnet_face_fer')
-    data = load(fullfile(opts.modelDir, 'alexnet-face-fer.mat'));
-    dagnet = dagnn.DagNN.loadobj(data.net);
-    return; % no need for further mods
-end
-
-% (pretrained by Elliot on vgg-faces with BN)
-if strcmp(opts.pretrainedNet, 'vgg_m_face_fer')
-    net = load(fullfile(opts.modelDir, 'vgg-m-face-fer.mat'));
+    modelFile = 'alexnet-face-fer-bn.mat' ;
+    net = loadModel(opts.modelDir, modelFile, opts) ;
     dagnet = dagnn.DagNN.loadobj(net);
     return; % no need for further mods
 end
 
-% vgg-vd-16 trained on vgg-faces data without batch normalization
-% NOTE: This is "vgg_face"
+if strcmp(opts.pretrainedNet, 'vgg_m_face_fer')
+    modelFile = 'vgg-m-face-fer-bn.mat' ;
+    net = loadModel(opts.modelDir, modelFile, opts) ;
+    dagnet = dagnn.DagNN.loadobj(net);
+    return; % no need for further mods
+end
+
 if strcmp(opts.pretrainedNet, 'vgg_vd_face_fer')
-    net = load(fullfile(opts.modelDir, 'vgg-vd-face-fer.mat'));
+    modelFile = 'vgg-vd-face-fer.mat' ;
+    net = loadModel(opts.modelDir, modelFile, opts) ;
+    dagnet = dagnn.DagNN.loadobj(net);
     return; % no need for further mods
 end
 
 if strcmp(opts.pretrainedNet, 'resnet50_face_fer')
-    data = load(fullfile(opts.modelDir, 'resnet-50-face-fer.mat'));
-    dagnet = dagnn.DagNN.loadobj(data.net);
+    modelFile = 'resnet50-face-fer-bn.mat' ;
+    net = loadModel(opts.modelDir, modelFile, opts) ;
+    dagnet = dagnn.DagNN.loadobj(net);
     return; % no need for further mods
 end
 
-if strcmp(opts.pretrainedNet, 'vgg_m_face_fer_mdond')
-    net = load(fullfile(opts.modelDir, 'vgg-m-face-fer.mat'));
-    % still needs mods
+net = loadModel(opts.modelDir, modelFile, opts) ;
+dagnet = opts.modifyForTask(net, opts);
+
+% --------------------------------------------------------------------
+function net = loadModel(modelDir, modelFile, opts) 
+% --------------------------------------------------------------------
+
+modelPath = fullfile(modelDir, modelFile) ;
+if ~exist(modelPath)
+    fetchPretrainedModel(modelDir, opts.pretrainedNet) ;
 end
 
-
-dagnet = opts.modifyForTask(net, opts);
+net = load(modelPath);
