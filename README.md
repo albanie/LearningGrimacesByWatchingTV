@@ -49,7 +49,7 @@ tracks are shown below:
 
 ![](figs/shock.gif)
 ![](figs/claudine.gif)
-![](figs/latesmile.gif)
+![](figs/lateSmile.gif)
 ![](figs/david.gif)
 
 
