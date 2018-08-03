@@ -24,9 +24,9 @@ function [dag, isPretrained] = grimaces_zoo(modelName, varargin)
 
    opts.useBnorm = false ;
    opts.finetuneLR = 1 ;
+   opts.numOutputs = 7 ;
    opts.dropoutRate = 0 ;
    opts.dropooutRate = 0.5 ;
-   opts.numOutputs = 7 ;
    opts = vl_argparse(opts, varargin) ;
 
   vggFace2Models = {
@@ -49,6 +49,11 @@ function [dag, isPretrained] = grimaces_zoo(modelName, varargin)
     'alexnet-face-fer-bn', ...
   } ;
 
+  sfewModels = {
+    'vgg-vd-face-sfew', ...
+    'resnet50-face-sfew', ...
+  } ;
+
   ferPlusModels = {
     'resnet50_ft-dag-dropout-0.1', ...
     'resnet50_ft-dag-dropout-0.5', ...
@@ -56,7 +61,8 @@ function [dag, isPretrained] = grimaces_zoo(modelName, varargin)
     'senet50_ft-dag-distributions-CNTK-dropout-0.5-aug', ...
   } ;
 
-  modelNames = [vggFace2Models standardModels ferModels ferPlusModels] ;
+  modelNames = [vggFace2Models standardModels ...
+                ferModels sfewModels ferPlusModels] ;
   msg = sprintf('%s: unrecognised model', modelName) ;
   assert(ismember(modelName, modelNames), msg) ;
 
@@ -79,7 +85,8 @@ function [dag, isPretrained] = grimaces_zoo(modelName, varargin)
   net = load(modelPath) ;
   if isfield(net, 'net'), net = net.net ; end
 
-  isPretrained = ismember(modelName, ferModels) ; % no modifications needed
+  isPretrained = ismember(modelName, ferModels) || ...
+                 ismember(modelName, sfewModels) ; % no modifications needed
 
   if isPretrained
     fprintf('\n---------------------------------------------------------\n') ;
