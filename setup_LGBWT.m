@@ -7,4 +7,4 @@ function setup_LGBWT()
 
   root = fileparts(mfilename('fullpath')) ;
   addpath(root, [root '/core'], [root '/facevalue-exps'], [root '/figs']) ;
-  addpath([root '/sfew-exps']) ;
+  addpath([root '/sfew-exps'], [root '/fer-exps']) ;
