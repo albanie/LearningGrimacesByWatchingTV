@@ -1,11 +1,21 @@
-###Learning Grimaces By Watching TV
+### Learning Grimaces By Watching TV
 
 By Samuel Albanie and Andrea Vedaldi
 
-This repo contains MATLAB code to reproduce the experiments contained in
+This repo contains links to the datasets and code to reproduce the experiments contained in
 the paper [Learning Grimaces By Watching TV](http://www.robots.ox.ac.uk/~albanie/publications/albanie16learning.pdf).
 
---
+![](figs/figure1.png)
+
+
+### Models 
+
+The trained emotion recognition models used in this work can be downloaded for use with MatConvNet and Pytorch:
+
+* [MatConvNet models](http://www.robots.ox.ac.uk/~albanie/mcn-models.html#grimaces)
+* [Pytorch models](http://www.robots.ox.ac.uk/~albanie/pytorch-models.html#grimaces)
+
+### Training Code
 
 The code is organised as follows:
 
@@ -17,14 +27,16 @@ The code is organised as follows:
 the paper
 * `core` contains shared code used by each of the experiments
 
-**Dependencies**: This code requires the MatConvNet framework which you can
-get from [here](https://github.com/vlfeat/matconvnet).
+**Dependencies**: The training code uses the MatConvNet framework which you can get from [here](https://github.com/vlfeat/matconvnet). 
 
-**Datasets**: The experiments in this paper use three datasets:
+### Datasets
+
+
+The experiments in this paper use three datasets:
 
 * The **FER** dataset is a publicly accessible dataset that contains about
 35,000 emotion labelled faces (available
-[here](https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data))
+[here](https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data)).
 * The **SFEW** dataset is a dataset that is freely available for research use.
 It contains about 1,500 emotion labelled faces (available
 [here](https://cs.anu.edu.au/few/emotiw2015.html))
@@ -34,6 +46,13 @@ faces (available
 [here](http://www.robots.ox.ac.uk/~vgg/data/facevalue)). Some example face
 tracks are shown below:
 
+
+![](figs/shock.gif)
+![](figs/claudine.gif)
+![](figs/lateSmile.gif)
+![](figs/david.gif)
+
+
 **Emotion recognition model visualizations**
 
 The network inversions shown in Figure 2 of the paper (and reproduced below)
@@ -42,3 +61,14 @@ be found [here](https://github.com/aravindhm/deep-goggle)) to the VGG-VD-16
 model trained on FER.
 
 ![Figure 2](figs/figure2.png)
+
+
+### Citation 
+
+
+If you find this work useful, please consider citing:
+
+```
+S. Albanie and A. Vedaldi, "Learning Grimaces by Watching TV", 
+Proceedings of the British Machine Vision Conference (BMVC), 2016
+```
