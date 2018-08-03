@@ -98,11 +98,7 @@ function [dag, isPretrained] = grimaces_zoo(modelName, varargin)
   end
 
   % prepare dagNN from input network, which can be either a SimpleNN or a DagNN
-  if isfield(net, 'params') % SimpleNN
-    dag = prepareFromDagNN(net, opts.numOutputs) ;
-  else % simpleNN
-    dag = prepareFromSimpleNN(net, opts.numOutputs) ;
-  end
+  dag = prepareFromDagNN(net, opts.numOutputs) ;
 
   % configure the loss layers
   dag = configureForClassification(dag, opts.finetuneLR, ...
@@ -195,43 +191,6 @@ function dag = prepareFromDagNN(net, numOutputs)
   % rename the output of the last fully connected layer to "prediction"
   predictionVar = dag.layers(dag.getLayerIndex(finalLayer.name)).outputs ;
   dag.renameVar(predictionVar, 'prediction') ;
-
-% ----------------------------------------------------------------------------
-function dag = prepareFromSimpleNN(net, numOutputs)
-% ----------------------------------------------------------------------------
-%PREPAREFROMSIMPLENN prepares a SimpleNN for classification
-%  PREPARESFROMIMPLENN(dag, numOutputs) prepares a SimpleNN
-%  network for classification by removing any old loss layers
-%  and ensuring that the final fully connected "prediction"
-%  layer has the correct dimensions.
-%
-%  NOTE: Once prepared, the network is converted to a DagNN
-%  for further processing
-  if isfield(net, 'net'), net = net.net ; end
-
-	% remove previous softmax layers
-	for l = 1:numel(net.layers)
-		if ismember(net.layers{l}.type, {'softmax', 'softmaxloss'})
-			net.layers(l) = [] ;
-		end
-	end
-
-	% modify last fully connected layer for multi-way classification
-	rng('default') ; rng(0) ;
-	fScale = 1/100 ;
-	numChannels = size(net.layers{end}.weights{1}, 3) ;
-	filters = fScale * randn(1, 1, numChannels, numOutputs, 'single') ;
-	biases = zeros(1, numOutputs, 'single') ;
-	modifiedWeights = { filters, biases } ;
-	net.layers{end}.weights = modifiedWeights ;
-	lastLayerName = net.layers{end}.name ;
-
-	% convert to dagNN
-	dag = dagnn.DagNN.fromSimpleNN(net, 'canonicalNames', true) ;
-
-	% rename the output of the last fully connected layer to "prediction"
-	predictionVar = dag.layers(dag.getLayerIndex(lastLayerName)).outputs ;
-	dag.renameVar(predictionVar, 'prediction') ;
 
 % ----------------------------------------------------------------------------
 function dag = configureForClassification(dag, finetuneLR, dropoutRate)
