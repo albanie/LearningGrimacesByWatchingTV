@@ -6,5 +6,5 @@ function setup_LGBWT()
 % Licensed under The MIT License [see LICENSE.md for details]
 
   root = fileparts(mfilename('fullpath')) ;
-  addpath(root, [root '/core'], [root '/facevalue-exps'], [root '/figs']) ;
-  addpath([root '/sfew-exps'], [root '/fer-exps']) ;
+  addpath(root, [root '/facevalue-exps'], [root '/figs']) ;
+  addpath([root '/emo-exps']) ;

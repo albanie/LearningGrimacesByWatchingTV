@@ -49,7 +49,7 @@ function [net, info] = cnn_emo_baselines(varargin)
   opts.useBnorm = 1 ;
   opts.dataAug = true ;
   opts.numOutputs = 7 ;
-  opts.finetuneLR = 0.1 ;
+  opts.finetuneLR = 1 ;
   opts.dropoutRate = 0.5 ;
   opts.dataset = 'fer2013' ;
   opts.modelName = 'vgg-vd-face-fer' ;
@@ -124,6 +124,9 @@ function [net, info] = cnn_emo_baselines(varargin)
   dag.meta.classes.name = imdb.meta.classes(:)' ;
   [net, info] = cnn_train_dag(dag, imdb, getBatchFn, ...
                               opts.train, 'expDir', expDir) ;
+
+  % prune to avoid massive disk usage
+  findBestEpoch(expDir, 'priorityMetric', 'classerror', 'prune', true) ;
 
 % -----------------------------------------------------------
 function expDir = buildExpDirName(opts)
